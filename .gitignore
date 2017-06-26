@@ -1,0 +1,14 @@
+# eclipse
+eclipse
+
+# gradle
+build
+.gradle
+
+# idea
+.idea
+
+# src
+out
+src/api
+src/test

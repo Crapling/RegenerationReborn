@@ -18,6 +18,5 @@ public class RegistryBlock {
         GameRegistry.registerBlock(cropSpeciesX, cropSpeciesX.getUnlocalizedName());
         GameRegistry.registerBlock(blockMysterium, blockMysterium.getUnlocalizedName());
         GameRegistry.registerBlock(oreMysterium, oreMysterium.getUnlocalizedName());
-
 }
 }

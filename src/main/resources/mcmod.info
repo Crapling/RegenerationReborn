@@ -1,14 +1,14 @@
 [
 {
   "modid": "regenerationreborn",
-  "name": "Regeneration Reborn",
-  "description": "This is a Mod for balancing Hardcore Modpacks",
-  "version": "0.1",
-  "mcversion": "1.7.10",
-  "url": "",
+  "name": "\u00A74RegenerationReborn",
+  "description": "A Minecraft modification designed for regeneration in Hardcore Modpacks",
+  "version": "0.11",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/Crapling/RegenerationReborn",
   "updateUrl": "",
-  "authorList": ["Crapling", "StablizdBlodd"],
-  "credits": "Crapling: code, StablizdBlodd: textures",
+  "authorList": ["Crapling"],
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

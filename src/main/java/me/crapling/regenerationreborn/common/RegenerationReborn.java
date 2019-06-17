@@ -1,6 +1,7 @@
 package me.crapling.regenerationreborn.common;
 
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -10,25 +11,23 @@ import me.crapling.regenerationreborn.common.registry.RegistryBlock;
 import me.crapling.regenerationreborn.common.registry.RegistryCrafting;
 import me.crapling.regenerationreborn.common.registry.RegistryItem;
 import me.crapling.regenerationreborn.common.registry.RegistryWorld;
+import me.crapling.regenerationreborn.common.world.event.EventHooks;
 import net.minecraft.potion.Potion;
-import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.MinecraftForge;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
-@Mod(modid = RegenerationReborn.MODID, version = RegenerationReborn.VERSION, name = RegenerationReborn.MODNAME)
+@Mod(modid = RegenerationReborn.MODID, version = RegenerationReborn.VERSION, name = RegenerationReborn.MODNAME, guiFactory = RegenerationReborn.GUIFACTORY)
 public class RegenerationReborn {
 
     public static final String MODID = "regenerationreborn";
-    public static final String VERSION = "0.1";
+    public static final String VERSION = "0.11";
     public static final String MODNAME = "Regeneration Reborn";
+    public static final String GUIFACTORY = "me.crapling." + MODID + ".common.gui.GUIFactoryManager";
 
-    public static boolean isNaturalRegenerationActive;
-    public static int potionHealthBlessingID;
-
-    public Configuration config;
+    public static final String ERR = RegenerationReborn.MODNAME + " Ooops! Something went wrong please report O.o";
 
     @SidedProxy(clientSide = "me.crapling.regenerationreborn.client.ClientProxy", serverSide = "me.crapling.regenerationreborn.common.CommonProxy")
     public static CommonProxy proxy;
@@ -38,17 +37,20 @@ public class RegenerationReborn {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e){
-        initConfiguration(e);
+        new Config().initConfiguration(e);
         extendPotionIDs();
 
         RegistryBlock.register();
         RegistryItem.register();
         RegistryWorld.register();
         RegistryCrafting.register();
+
+        MinecraftForge.EVENT_BUS.register(new EventHooks());
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent e){
+        FMLCommonHandler.instance().bus().register(new EventHooks());
         proxy.registerRenderers();
     }
 
@@ -58,7 +60,7 @@ public class RegenerationReborn {
 
     private void extendPotionIDs() {
         if (Potion.potionTypes.length < 128) {
-            Field field = null;
+            Field field;
             try {
                 field = Potion.class.getDeclaredField("potionTypes");
                 Field modField = Field.class.getDeclaredField("modifiers");
@@ -67,18 +69,11 @@ public class RegenerationReborn {
                 field.set(null, Arrays.copyOf(Potion.potionTypes, 128));
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
-                System.out.println(RegenerationReborn.MODNAME + " Ooops! Something went wrong please report O.o");
+                System.out.println(ERR);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
-                System.out.println(RegenerationReborn.MODNAME + " Ooops! Something went wrong please report O.o");
+                System.out.println(ERR);
             }
         }
-    }
-    private void initConfiguration(FMLPreInitializationEvent e){
-        config = new Configuration(new File("config/RegenerationReborn.cfg"));
-        config.load();
-        isNaturalRegenerationActive = config.get("world functions", "NaturalRegeneration", true).getBoolean(true);
-        potionHealthBlessingID = config.get("potions effects", "HealthBlessingID", 120).getInt();
-        config.save();
     }
 }

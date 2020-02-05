@@ -1,0 +1,16 @@
+[
+{
+  "modid": "regenerationreborn",
+  "name": "\u00A74RegenerationReborn",
+  "description": "A Minecraft modification designed for regeneration in Hardcore Modpacks",
+  "version": "0.12",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/Crapling/RegenerationReborn",
+  "updateUrl": "",
+  "authorList": ["Crapling"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

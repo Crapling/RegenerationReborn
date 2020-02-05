@@ -2,7 +2,6 @@ package me.crapling.regenerationreborn.common.registry;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import me.crapling.regenerationreborn.common.Config;
-import me.crapling.regenerationreborn.common.world.event.EventHooks;
 import me.crapling.regenerationreborn.common.world.generation.OreGen;
 import me.crapling.regenerationreborn.common.world.potion.HealthBlessing;
 import net.minecraft.item.ItemStack;

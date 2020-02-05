@@ -1,7 +1,7 @@
 package me.crapling.regenerationreborn.common.items;
 
 import me.crapling.regenerationreborn.common.Config;
-import me.crapling.regenerationreborn.common.RegenerationReborn;
+import me.crapling.regenerationreborn.common.Helper;
 import me.crapling.regenerationreborn.common.registry.RegistryItem;
 import me.crapling.regenerationreborn.common.registry.RegistryWorld;
 import me.crapling.regenerationreborn.common.world.potionprocess.HealthBlessingProcess;
@@ -37,57 +37,49 @@ public class ItemHealthyBottle extends ItemFood {
     protected void onFoodEaten(ItemStack itemStack, World world, EntityPlayer p) {
         super.onFoodEaten(itemStack, world, p);
 
-        HealthBlessingProcess process = new HealthBlessingProcess();
-        if (world.isRemote) {
-            try {
-                Robot robot = new Robot();
-                if (Config.scrollRight) {
-                    robot.mouseWheel(100);
-                } else {
-                    robot.mouseWheel(-100);
+            HealthBlessingProcess process = new HealthBlessingProcess();
+            if (world.isRemote) {
+                try {
+                    Robot robot = new Robot();
+                    if (Config.scrollRight) {
+                        robot.mouseWheel(100);
+                    } else {
+                        robot.mouseWheel(-100);
+                    }
+                } catch (AWTException e) {
+                    e.printStackTrace();
+                    System.out.println(Helper.ERR);
                 }
-            } catch (AWTException e) {
-                e.printStackTrace();
-                System.out.println(RegenerationReborn.ERR);
-            }
-        }
-        if (!world.isRemote) {
-            System.out.println("Max Health:" + p.getMaxHealth());
-            p.setHealth(p.getHealth() + Config.addPlayerHealth);
+            }else{
 
+            int sumDuration;
+            int sumAmplifier;
+
+            p.setHealth(p.getHealth() + Config.addPlayerHealthOnBlessing);
             process.setPotionEffectID(this.effect.getPotionID());
 
-            if (!p.isPotionActive(effect.getPotionID())) {
-                p.addPotionEffect(process.setPotionEffectParameter(effect.getDuration(), effect.getAmplifier()));
-
-                for (int i = 0; i < Config.potionEffectArray.length; i++) {
-                    if (Integer.parseInt(Config.potionEffectArray[i].substring(0, 1)) == 0) {
-                        String potionEffect = Config.potionEffectArray[i];
-                        String[] potionParameter = potionEffect.split("\\|", 4);
-                        p.addPotionEffect(new PotionEffect(Integer.parseInt(potionParameter[1]), Integer.parseInt(potionParameter[2]), Integer.parseInt(potionParameter[3])));
-                    }
-                }
-            } else {
-                int sumDuration = p.getActivePotionEffect(RegistryWorld.healthBlessing).getDuration() + effect.getDuration();
-                int sumAmplifier = p.getActivePotionEffect(RegistryWorld.healthBlessing).getAmplifier() + 1;
-                p.addPotionEffect(process.setPotionEffectParameter(sumDuration, sumAmplifier));
-
-                for (int i = 0; i < Config.potionEffectArray.length; i++) {
-                    if (Integer.parseInt(Config.potionEffectArray[i].substring(0, 1)) == p.getActivePotionEffect(RegistryWorld.healthBlessing).getAmplifier()) {
-                        String potionEffect = Config.potionEffectArray[i];
-                        String[] potionParameter = potionEffect.split("\\|", 4);
-                        p.addPotionEffect(new PotionEffect(Integer.parseInt(potionParameter[1]), Integer.parseInt(potionParameter[2]), Integer.parseInt(potionParameter[3])));
-                    }
-                }
+            if(!p.isPotionActive(effect.getPotionID())) {
+                sumDuration = effect.getDuration();
+                sumAmplifier = effect.getAmplifier();
+            }else{
+                sumDuration = p.getActivePotionEffect(RegistryWorld.healthBlessing).getDuration() + effect.getDuration();
+                sumAmplifier = p.getActivePotionEffect(RegistryWorld.healthBlessing).getAmplifier() + 1;
             }
-            if (Config.getGlassBottleBack) {
-                p.inventory.addItemStackToInventory(new ItemStack(Items.glass_bottle));
+            p.addPotionEffect(process.setPotionEffectParameter(sumDuration, sumAmplifier));
+
+            for (String effect : Config.potionSideEffectArray) {
+                if (Integer.parseInt(effect.substring(0, 1)) == p.getActivePotionEffect(RegistryWorld.healthBlessing).getAmplifier()) {
+                    String[] potionParameter = effect.split("\\|");
+                    if(Helper.getRandomDouble() <= Double.parseDouble(potionParameter[4])) {
+                p.addPotionEffect(new PotionEffect(Integer.parseInt(potionParameter[1]), Integer.parseInt(potionParameter[2]), Integer.parseInt(potionParameter[3])));
             }
+            }
+        }
+        if (Config.getGlassBottleBack) {
+                    p.inventory.addItemStackToInventory(new ItemStack(Items.glass_bottle));
+                    }
 
-            Random rand = new Random();
-            double chance = rand.nextFloat();
-
-            if (chance <= Config.mysteriumChance) {
+            if (Helper.getRandomDouble() <= Config.mysteriumChance) {
                 p.inventory.addItemStackToInventory(new ItemStack(RegistryItem.mysterium));
             }
         }

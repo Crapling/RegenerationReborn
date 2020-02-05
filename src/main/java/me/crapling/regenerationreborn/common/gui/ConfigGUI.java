@@ -4,7 +4,7 @@ import cpw.mods.fml.client.config.DummyConfigElement;
 import cpw.mods.fml.client.config.GuiConfig;
 import cpw.mods.fml.client.config.IConfigElement;
 import me.crapling.regenerationreborn.common.Config;
-import me.crapling.regenerationreborn.common.RegenerationReborn;
+import me.crapling.regenerationreborn.common.Helper;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ConfigGUI extends GuiConfig{
     public ConfigGUI(GuiScreen parent){
-        super(parent, getConfigElements(), RegenerationReborn.MODID, true, false, "RegenerationReborn Configuration");
+        super(parent, getConfigElements(), Helper.MODID, true, false, "RegenerationReborn Configuration");
 
     }
 

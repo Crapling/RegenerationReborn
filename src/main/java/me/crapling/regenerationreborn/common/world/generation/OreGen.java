@@ -27,7 +27,7 @@ public class OreGen implements IWorldGenerator {
     }
 
     public void generateOverworld(World world, Random random, int x, int z) {
-        genOre(RegistryBlock.oreMysterium, Blocks.stone, world, random, x, z, 2, 6, 10, 0, 36);
+        genOre(RegistryBlock.oreMysterium, Blocks.stone, world, random, x, z, 2, 6, 20, 0, 42);
     }
     public void generateNether(World world, Random random, int x, int z){
     }
@@ -38,11 +38,11 @@ public class OreGen implements IWorldGenerator {
         int veinSize = minVein + random.nextInt(maxVein - minVein);
         int heightRange = maxY - minY;
         WorldGenMinable gen = new WorldGenMinable(block, veinSize, generateIn);
-        for(int i = 0; i<chance; i++){
-            int xRandom = x * 16 + random.nextInt(16);
-            int yRandom = random.nextInt(heightRange) + minY;
-            int zRandom = z * 16 +random.nextInt(16);
-            gen.generate(world, random, xRandom, yRandom, zRandom);
+            for(int i = 0; i<chance; i++){
+                int xRandom = x * 16 + random.nextInt(16);
+                int yRandom = random.nextInt(heightRange) + minY;
+                int zRandom = z * 16 +random.nextInt(16);
+                gen.generate(world, random, xRandom, yRandom, zRandom);
         }
     }
 }

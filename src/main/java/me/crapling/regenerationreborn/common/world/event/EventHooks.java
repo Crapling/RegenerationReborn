@@ -3,28 +3,24 @@ package me.crapling.regenerationreborn.common.world.event;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import me.crapling.regenerationreborn.common.Config;
-import me.crapling.regenerationreborn.common.RegenerationReborn;
+import me.crapling.regenerationreborn.common.Helper;
 import me.crapling.regenerationreborn.common.registry.RegistryWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
-
-import java.util.Random;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class EventHooks{
 
     private boolean interruptHealing = true;
-    private int ticksExisted = 0;
-    private World world;
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent e) {
-        if (e.modID.equals(RegenerationReborn.MODID)) {
+        if (e.modID.equals(Helper.MODID)) {
             Config.syncConfig();
         }
     }
@@ -39,25 +35,40 @@ public class EventHooks{
             }
         }
     }
+
+    @SubscribeEvent
+    public void onDamage(LivingHurtEvent e){
+        if(e.entity instanceof EntityPlayer && e.source.getSourceOfDamage() instanceof Entity && Helper.getRandomDouble() <= Config.armorPierceDamageChance){
+            EntityPlayer p = (EntityPlayer) e.entity;
+            if(e.ammount >= Config.minDamageToPierce &&  p.getTotalArmorValue() >= Config.minArmorBarPointsToPierce){
+                    p.setHealth(p.getHealth() - Config.maxArmorPiercingDamage);
+                }
+            }
+        }
+
     @SubscribeEvent
     public void onKill(LivingDeathEvent e) {
 
         Entity entity = e.entity;
-        Entity dmgSource = e.source.getSourceOfDamage();
+        Entity dmgSource = e.source.getEntity();
 
-        Random rand = new Random();
-        double chance = rand.nextFloat();
+        if (dmgSource instanceof EntityPlayer && entity.isCreatureType(EnumCreatureType.monster, false) && Helper.getRandomDouble()<= Config.mobKillMeleeEffectChance) {
 
-        if (dmgSource instanceof EntityPlayer) {
-            if (entity.isCreatureType(EnumCreatureType.monster, false)) {
-                String[] potionParameterMob = Config.mobKillMeleePotionEffect.split("\\|", 3);
-                if (chance <= Config.mobKillMeleePotionEffectChance) {
-                    if(Config.allowHealingOnMobKill) interruptHealing = false;
-                    ((EntityPlayer) dmgSource).addPotionEffect(new PotionEffect(Integer.parseInt(potionParameterMob[0]), Integer.parseInt(potionParameterMob[1]), Integer.parseInt(potionParameterMob[2])));
+            EntityPlayer p = (EntityPlayer) dmgSource;
+            interruptHealing = false;
+
+            if(Helper.getRandomDouble() <= Config.mobKillHealChance) {
+                p.setHealth(p.getHealth() + Config.mobKillHealAmount);
+            }
+            for (String effect : Config.mobKillMeleePotionEffect) {
+                String[] potionParameter = (effect.split("\\|"));
+                if (Helper.getRandomDouble() <= Double.parseDouble(potionParameter[3])) {
+                    p.addPotionEffect(new PotionEffect(Integer.parseInt(potionParameter[0]), Integer.parseInt(potionParameter[1]), Integer.parseInt(potionParameter[2])));
                 }
             }
+            interruptHealing = true;
         }
-    }
+}
 
     @SubscribeEvent
      public void onHeal(LivingHealEvent e) {
